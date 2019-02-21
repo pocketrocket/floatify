@@ -1,6 +1,6 @@
 {
   "name": "floatify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Common helper to floatify strings",
   "main": "floatify.js",
   "directories": {
@@ -27,7 +27,7 @@
   "dependencies": {
     "mocha": "^3.0.2"
   },
-  "author": "pocketrocket - Oliver Kriz",
+  "author": "pocketrocket <pocketrocket@codecaboose.com>",
   "license": "MIT",
   "readmeFilename": "README.md"
 }
