@@ -17,8 +17,13 @@
     "node": ">= 6.0.0"
   },
   "scripts": {
-    "eslint": "eslint floatify.js",
-    "test": "mocha"
+    "build": "babel src -d build",
+    "lint": "eslint src",
+    "test": "mocha test",
+
+    "prepublish": "npm run build # also runs npm run prebuild",
+    "prebuild": "npm run test # also runs npm run pretest",
+    "pretest": "npm run lint"
   },
   "keywords": [
     "floatify",
@@ -33,6 +38,9 @@
     "mocha": "^3.0.2"
   },
   "author": "pocketrocket <pocketrocket@codecaboose.com>",
+  "contributors": [
+    "Ioannis Chiotakakos (https://github.com/jchiotaka)"
+  ],
   "license": "MIT",
   "readmeFilename": "README.md"
 }

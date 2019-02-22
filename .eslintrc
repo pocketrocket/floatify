@@ -1,6 +1,9 @@
 {
   "extends": "eslint-config-airbnb-es5",
   "rules": {
-    "no-shadow": "off"
+    "no-shadow": 0
+  },
+  "env": {
+    "mocha": true
   }
 }
