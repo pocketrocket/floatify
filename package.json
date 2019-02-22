@@ -1,6 +1,6 @@
 {
   "name": "floatify",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Common helper to floatify strings",
   "main": "floatify.js",
   "directories": {
@@ -17,6 +17,7 @@
     "node": ">= 6.0.0"
   },
   "scripts": {
+    "eslint": "eslint floatify.js",
     "test": "mocha"
   },
   "keywords": [
@@ -24,7 +25,7 @@
     "float",
     "string"
   ],
-  "dependencies": {
+  "devDependencies": {
     "babel-eslint": "^10.0.1",
     "eslint": "^5.14.1",
     "eslint-config-airbnb-es5": "^1.2.0",
