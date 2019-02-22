@@ -18,7 +18,7 @@
   },
   "scripts": {
     "lint": "eslint src",
-    "test": "nyc --reporter=html --reporter=text mocha test",
+    "test": "nyc --reporter=html --reporter=text --reporter=clover mocha test",
     "prepublishOnly": "# also runs npm run prebuild",
     "prebuild": "npm run test # also runs npm run pretest",
     "pretest": "npm run lint"
