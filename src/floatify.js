@@ -88,11 +88,6 @@ var floatify = function floatify(str) {
         return Number.NaN;
       }
 
-      if (dotPos > -1 && commaPos > -1) {
-        // fomat mixed with space, comma and dot is invalid
-        return Number.NaN;
-      }
-
       spaceSplit.unshift(first);
       spaceSplit.push(last);
 
