@@ -250,6 +250,17 @@ const tests = [
       { input: '1234,123,123', expectation: Number.NaN },
       { input: '1,2,3', expectation: Number.NaN },
 
+      { input: ' ', expectation: Number.NaN },
+      { input: '  ', expectation: Number.NaN },
+      { input: '   ', expectation: Number.NaN },
+      { input: '1 1 123', expectation: Number.NaN },
+      { input: '1 123 1', expectation: Number.NaN },
+      { input: '123 1 1', expectation: Number.NaN },
+      { input: '123 123 1234', expectation: Number.NaN },
+      { input: '123 1234 123', expectation: Number.NaN },
+      { input: '1234 123 123', expectation: Number.NaN },
+      { input: '1 2 3', expectation: Number.NaN },
+
       { input: '123.123,123.123,123', expectation: Number.NaN },
       { input: '123.123,123.123.123', expectation: Number.NaN },
       { input: '123.123,123.123', expectation: Number.NaN },
