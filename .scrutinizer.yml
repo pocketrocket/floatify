@@ -1,0 +1,22 @@
+checks:
+  javascript: true
+build:
+  nodes:
+    analysis:
+      tests:
+        override:
+          - js-scrutinizer-run
+          -
+            command: eslint-run
+            use_website_config: false
+      environment:
+        node:
+          version: 8.11.1
+    tests: true
+    coverage:
+      tests:
+        override:
+          - command: npm test
+            coverage:
+              file: coverage/clover.xml
+              format: clover
