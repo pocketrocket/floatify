@@ -1,7 +1,8 @@
 'use strict';
 
-var floatify = require('../src/floatify.js');
-var assert = require('assert');
+const Floatify = require('../src/floatify.js');
+const floatify = new Floatify();
+const assert = require('assert');
 
 const tests = [
   {
@@ -289,13 +290,12 @@ tests.forEach((test) => {
       it(`${assertion.input} gives ${assertion.expectation}`, () => {
         if (Number.isNaN(assertion.expectation)) {
           assert.strictEqual(
-            isNaN(floatify.floatify(assertion.input)),
+            isNaN(floatify.parse(assertion.input)),
             true
           );
-          return;
+        } else {
+          assert.equal(floatify.parse(assertion.input), assertion.expectation);
         }
-
-        assert.equal(floatify.floatify(assertion.input), assertion.expectation);
       });
     });
   });
