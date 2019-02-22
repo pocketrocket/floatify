@@ -15,6 +15,8 @@ floatify.floatify("123.242,5346556")
 >> 123242.5346556
 floatify.floatify("123,242.5346556")
 >> 123242.5346556
+floatify.floatify("123 242 123.7568")
+>> 123242123.7568
 ```
 
 Run Example @runkit:
@@ -35,4 +37,4 @@ for more detailed examples see Mocha Testcases in `test/floatify.js`
 `git clone https://github.com/pocketrocket/floatify.git`
 
 ## Testing
-Basic testing done, use `npm run test` or `yarn run test`
+Basic testing done, use `npm test` or `yarn test`
