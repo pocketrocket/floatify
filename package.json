@@ -26,7 +26,11 @@
   "keywords": [
     "floatify",
     "float",
-    "string"
+    "string",
+    "convert",
+    "decimals",
+    "localization",
+    "numbers"
   ],
   "devDependencies": {
     "babel-eslint": "^10.0.1",
