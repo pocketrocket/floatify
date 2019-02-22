@@ -17,11 +17,9 @@
     "node": ">= 6.0.0"
   },
   "scripts": {
-    "build": "babel src -d build",
     "lint": "eslint src",
     "test": "mocha test",
-
-    "prepublish": "npm run build # also runs npm run prebuild",
+    "prepublishOnly": "# also runs npm run prebuild",
     "prebuild": "npm run test # also runs npm run pretest",
     "pretest": "npm run lint"
   },
@@ -35,7 +33,7 @@
     "eslint": "^5.14.1",
     "eslint-config-airbnb-es5": "^1.2.0",
     "eslint-plugin-react": "^7.12.4",
-    "mocha": "^3.0.2"
+    "mocha": "^6.0.1"
   },
   "author": "pocketrocket <pocketrocket@codecaboose.com>",
   "contributors": [
