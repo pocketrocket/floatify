@@ -1,11 +1,11 @@
 'use strict';
 
-var floatify = require('../floatify.js');
+var floatify = require('../src/floatify.js');
 var assert = require('assert');
 
 const tests = [
   {
-    title: 'it should work without dot and comma',
+    title: 'should work without dot and comma',
     assertions: [
       { input: '-1234567', expectation: -1234567.0 },
       { input: '-123456', expectation: -123456.0 },
@@ -172,12 +172,12 @@ const tests = [
   {
     title: 'should fail with spaces as thousands separators',
     assertions: [
-      { input: '12 12 12', expectation: true },
-      { input: '12 123 12', expectation: true },
-      { input: '12 12 123', expectation: true },
-      { input: '1234 123 123', expectation: true },
-      { input: '123 1234 123', expectation: true },
-      { input: '123 123 1234', expectation: true }
+      { input: '12 12 12', expectation: Number.NaN },
+      { input: '12 123 12', expectation: Number.NaN },
+      { input: '12 12 123', expectation: Number.NaN },
+      { input: '1234 123 123', expectation: Number.NaN },
+      { input: '123 1234 123', expectation: Number.NaN },
+      { input: '123 123 1234', expectation: Number.NaN }
     ]
   },
   {
@@ -230,44 +230,44 @@ const tests = [
   {
     title: 'should return NaN for all wrong formats',
     assertions: [
-      { input: '.', expectation: true },
-      { input: '..', expectation: true },
-      { input: '...', expectation: true },
-      { input: '1.', expectation: true },
-      { input: '1.1234.1', expectation: true },
-      { input: '123.123.1234', expectation: true },
-      { input: '123.1234.123', expectation: true },
-      { input: '1234.123.123', expectation: true },
-      { input: '1.2.3', expectation: true },
+      { input: '.', expectation: Number.NaN },
+      { input: '..', expectation: Number.NaN },
+      { input: '...', expectation: Number.NaN },
+      { input: '1.', expectation: Number.NaN },
+      { input: '1.1234.1', expectation: Number.NaN },
+      { input: '123.123.1234', expectation: Number.NaN },
+      { input: '123.1234.123', expectation: Number.NaN },
+      { input: '1234.123.123', expectation: Number.NaN },
+      { input: '1.2.3', expectation: Number.NaN },
 
-      { input: ',', expectation: true },
-      { input: ',,', expectation: true },
-      { input: ',,,', expectation: true },
-      { input: '1,', expectation: true },
-      { input: '1,1234,1', expectation: true },
-      { input: '123,123,1234', expectation: true },
-      { input: '123,1234,123', expectation: true },
-      { input: '1234,123,123', expectation: true },
-      { input: '1,2,3', expectation: true },
+      { input: ',', expectation: Number.NaN },
+      { input: ',,', expectation: Number.NaN },
+      { input: ',,,', expectation: Number.NaN },
+      { input: '1,', expectation: Number.NaN },
+      { input: '1,1234,1', expectation: Number.NaN },
+      { input: '123,123,1234', expectation: Number.NaN },
+      { input: '123,1234,123', expectation: Number.NaN },
+      { input: '1234,123,123', expectation: Number.NaN },
+      { input: '1,2,3', expectation: Number.NaN },
 
-      { input: '123.123,123.123,123', expectation: true },
-      { input: '123.123,123.123.123', expectation: true },
-      { input: '123.123,123.123', expectation: true },
-      { input: '123,123.123,123', expectation: true },
-      { input: '123,123.123,123.123', expectation: true },
-      { input: '123,123.123,123,123', expectation: true },
+      { input: '123.123,123.123,123', expectation: Number.NaN },
+      { input: '123.123,123.123.123', expectation: Number.NaN },
+      { input: '123.123,123.123', expectation: Number.NaN },
+      { input: '123,123.123,123', expectation: Number.NaN },
+      { input: '123,123.123,123.123', expectation: Number.NaN },
+      { input: '123,123.123,123,123', expectation: Number.NaN },
 
-      { input: '..,-', expectation: true },
-      { input: 'seven', expectation: true },
+      { input: '..,-', expectation: Number.NaN },
+      { input: 'seven', expectation: Number.NaN },
 
-      { input: '12.12.12', expectation: true },
-      { input: '12,12,12', expectation: true },
-      { input: '12.12.123', expectation: true },
-      { input: '12,12,123', expectation: true },
-      { input: '12.123.12', expectation: true },
-      { input: '12,123,12', expectation: true },
-      { input: '123.12.12', expectation: true },
-      { input: '123,12,12', expectation: true }
+      { input: '12.12.12', expectation: Number.NaN },
+      { input: '12,12,12', expectation: Number.NaN },
+      { input: '12.12.123', expectation: Number.NaN },
+      { input: '12,12,123', expectation: Number.NaN },
+      { input: '12.123.12', expectation: Number.NaN },
+      { input: '12,123,12', expectation: Number.NaN },
+      { input: '123.12.12', expectation: Number.NaN },
+      { input: '123,12,12', expectation: Number.NaN }
     ]
   }
 ];
@@ -276,15 +276,15 @@ tests.forEach((test) => {
   describe(test.title, () => {
     test.assertions.forEach((assertion) => {
       it(`${assertion.input} gives ${assertion.expectation}`, () => {
-        switch (typeof assertion.expectation) {
-        case 'boolean':
-          assert.equal(isNaN(floatify.floatify(assertion.input)), assertion.expectation);
-          break;
-
-        default:
-          assert.equal(floatify.floatify(assertion.input), assertion.expectation);
-          break;
+        if (Number.isNaN(assertion.expectation)) {
+          assert.strictEqual(
+            isNaN(floatify.floatify(assertion.input)),
+            true
+          );
+          return;
         }
+
+        assert.equal(floatify.floatify(assertion.input), assertion.expectation);
       });
     });
   });
