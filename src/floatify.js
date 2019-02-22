@@ -3,14 +3,14 @@
 var floatify = function floatify(str) {
   var toFloatFormat = function toFloatFormat(str, ts, ds) {
     var string = str;
-    var thousandsSeperator = ts || '';
-    var decimalSeperator = ds || '';
+    var thousandsSeparator = ts || '';
+    var decimalSeparator = ds || '';
 
-    thousandsSeperator = thousandsSeperator === '.' ? '\\.' : thousandsSeperator;
-    decimalSeperator = decimalSeperator === '.' ? '\\.' : decimalSeperator;
+    thousandsSeparator = thousandsSeparator === '.' ? '\\.' : thousandsSeparator;
+    decimalSeparator = decimalSeparator === '.' ? '\\.' : decimalSeparator;
 
-    string = thousandsSeperator !== '' ? string.replace(new RegExp(thousandsSeperator, 'g'), '') : string;
-    string = decimalSeperator !== '' ? string.replace(new RegExp(decimalSeperator, 'g'), '.') : string;
+    string = thousandsSeparator !== '' ? string.replace(new RegExp(thousandsSeparator, 'g'), '') : string;
+    string = decimalSeparator !== '' ? string.replace(new RegExp(decimalSeparator, 'g'), '.') : string;
 
     return parseFloat(string);
   };
