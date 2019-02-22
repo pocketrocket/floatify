@@ -1,6 +1,8 @@
 floatify . Common helper to floatify strings
 ===
 [![Build Status](https://travis-ci.org/pocketrocket/floatify.svg?branch=master)](https://travis-ci.org/pocketrocket/floatify)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/pocketrocket/floatify/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pocketrocket/floatify/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/pocketrocket/floatify/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/pocketrocket/floatify/?branch=master)
 
 ## Usage
 ### Example
