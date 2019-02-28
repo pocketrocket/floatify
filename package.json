@@ -2,7 +2,7 @@
   "name": "floatify",
   "version": "1.2.1",
   "description": "Common helper to floatify strings",
-  "main": "floatify.js",
+  "main": "src/floatify.js",
   "directories": {
     "test": "test"
   },
