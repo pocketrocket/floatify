@@ -289,13 +289,13 @@ tests.forEach((test) => {
       it(`${assertion.input} gives ${assertion.expectation}`, () => {
         if (Number.isNaN(assertion.expectation)) {
           assert.strictEqual(
-            isNaN(floatify.floatify(assertion.input)),
+            isNaN(floatify(assertion.input)),
             true
           );
           return;
         }
 
-        assert.equal(floatify.floatify(assertion.input), assertion.expectation);
+        assert.equal(floatify(assertion.input), assertion.expectation);
       });
     });
   });

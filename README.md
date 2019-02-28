@@ -4,23 +4,31 @@ floatify . Common helper to floatify strings
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/pocketrocket/floatify/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pocketrocket/floatify/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/pocketrocket/floatify/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/pocketrocket/floatify/?branch=master)
 
+## BC Break
+
+Since v1.3.0 floatify exports as function!
+
+```js
+var floatify = require("floatify")
+// old: floatify.floatify("123123.245346556")
+// new:
+floatify("123123.245346556")
+```
+
 ## Usage
 ### Example
 
 ```js
 var floatify = require("floatify")
-floatify.floatify("123123.245346556")
+floatify("123123.245346556")
 >> 123123.245346556
-floatify.floatify("123.242,5346556")
+floatify("123.242,5346556")
 >> 123242.5346556
-floatify.floatify("123,242.5346556")
+floatify("123,242.5346556")
 >> 123242.5346556
-floatify.floatify("123 242 123.7568")
+floatify("123 242 123.7568")
 >> 123242123.7568
 ```
-
-Run Example @runkit:
-https://runkit.com/embed/j8f4v433l1wh
 
 for more detailed examples see Mocha Testcases in `test/floatify.js`
 

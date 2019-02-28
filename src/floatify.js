@@ -147,5 +147,4 @@ if (typeof exports !== 'undefined') {
   if (typeof module !== 'undefined' && module.exports) {
     exports = module.exports = floatify;
   }
-  exports.floatify = floatify;
 }
