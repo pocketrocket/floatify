@@ -61,11 +61,10 @@ var floatify = function floatify(str) {
       }
 
       if (parseResult !== null) {
-        return parseResult;
+        break;
       }
     }
-
-    return toFloatFormat(string, element, '');
+    return parseResult;
   };
 
   var parse = function parse(str) {
