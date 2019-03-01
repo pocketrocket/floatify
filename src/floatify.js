@@ -109,6 +109,35 @@ var floatify = function floatify(str) {
       return toFloatFormat(string, '.', ',');
     }
 
+    function parseSingleSeparators() {
+      if (dotPos !== -1) {
+        // only dot(s) in format
+        return parseParts(string, '.', dotCount);
+      }
+
+      if (commaPos !== -1) {
+        // only comma(s) in format
+        return parseParts(string, ',', commaCount);
+      }
+
+      return toFloatFormat(string);
+    }
+
+    function precheckFormat() {
+      // only combination of 2 separators allowed
+      if (dotCount > 0 && commaCount > 0 && spaceCount > 0) {
+        return false;
+      }
+
+      // if there is any separator (space, comma, dot) found more than once,
+      // all other must not be found more than once
+      if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) {
+        return false;
+      }
+
+      return !(commaCount > 1 && spaceCount > 1);
+    }
+
     string = string.trim();
 
     // 1st dot position
@@ -128,18 +157,7 @@ var floatify = function floatify(str) {
     dotCount = string.split('.').length - 1;
     commaCount = string.split(',').length - 1;
 
-    // only combination of 2 separators allowed
-    if (dotCount > 0 && commaCount > 0 && spaceCount > 0) {
-      return Number.NaN;
-    }
-
-    // if there is any separator (space, comma, dot) found more than once,
-    // all other must not be found more than once
-    if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) {
-      return Number.NaN;
-    }
-
-    if (commaCount > 1 && spaceCount > 1) {
+    if (!precheckFormat()) {
       return Number.NaN;
     }
 
@@ -154,17 +172,7 @@ var floatify = function floatify(str) {
       return parseMixedSeparators();
     }
 
-    if (dotPos !== -1) {
-      // only dot(s) in format
-      return parseParts(string, '.', dotCount);
-    }
-
-    if (commaPos !== -1) {
-      // only comma(s) in format
-      return parseParts(string, ',', commaCount);
-    }
-
-    return toFloatFormat(string);
+    return parseSingleSeparators();
   };
 
   return parse(str);
