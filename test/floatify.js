@@ -224,7 +224,13 @@ const tests = [
       { input: '12.123,0', expectation: 12123 },
       { input: '123.123,0', expectation: 123123 },
       { input: '1.234.567,0', expectation: 1234567 },
-      { input: '1.234.567.890,0', expectation: 1234567890 }
+      { input: '1.234.567.890,0', expectation: 1234567890 },
+
+      { input: '1,123.0', expectation: 1123 },
+      { input: '12,123.0', expectation: 12123 },
+      { input: '123,123.0', expectation: 123123 },
+      { input: '1,234,567.0', expectation: 1234567 },
+      { input: '1,234,567,890.0', expectation: 1234567890 }
     ]
   },
   {

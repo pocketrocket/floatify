@@ -32,8 +32,7 @@ var floatify = function floatify(str) {
         }
 
         if (
-          (leftVal === 0 || isNaN(leftVal) || left.length > 3)
-          && parts.length - 1 === i
+          (leftVal === 0 || isNaN(leftVal) || left.length > 3) && parts.length - 1 === i
         ) {
           return toFloatFormat(string, '', element);
         }
@@ -98,10 +97,8 @@ var floatify = function floatify(str) {
     if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) {
       return Number.NaN;
     }
-    if (commaCount > 1 && (dotCount > 1 || spaceCount > 1)) {
-      return Number.NaN;
-    }
-    if (spaceCount > 1 && (dotCount > 1 || commaCount > 1)) {
+
+    if (commaCount > 1 && spaceCount > 1) {
       return Number.NaN;
     }
 
