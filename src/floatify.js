@@ -18,41 +18,51 @@ var floatify = function floatify(str) {
     var element = ele;
     var parts = string.split(element);
 
-    for (var i = 1; i < parts.length; i++) {
-      var current = parts[i];
-      var left = parts[i - 1];
-      var leftVal = parseInt(left, 10);
-      var isLast = parts.length - 1 === i;
-
-      if (current.length === 0 && !isLast) {
+    function parseMidPart() {
+      if (current.length !== 3) {
         return Number.NaN;
+      }
+
+      if (left.length > 3) {
+        return Number.NaN;
+      }
+
+      // no decision, continue
+      return null;
+    }
+
+    function parseEndPart() {
+      if ((leftVal === 0 || isNaN(leftVal) || left.length > 3)) {
+        return toFloatFormat(string, '', element);
       }
 
       if (current.length === 3) {
-        if (left.length > 3 && !isLast) {
-          return Number.NaN;
-        }
-
-        if (
-          (leftVal === 0 || isNaN(leftVal) || left.length > 3) && isLast
-        ) {
-          return toFloatFormat(string, '', element);
-        }
-
-        continue;
+        return toFloatFormat(string, element, '');
       }
 
-      if (!isLast) {
-        // violation in midPart -> NaN
-        return Number.NaN;
-      }
-
-      // violation in end -> Could be decimalSeparator
       if (count === 1) {
         return toFloatFormat(string, '', element);
       }
 
       return Number.NaN;
+    }
+
+    for (var i = 1; i < parts.length; i++) {
+      var current = parts[i];
+      var left = parts[i - 1];
+      var leftVal = parseInt(left, 10);
+      var isLast = parts.length - 1 === i;
+      var parseResult;
+
+      if (!isLast) {
+        parseResult = parseMidPart();
+      } else {
+        parseResult = parseEndPart();
+      }
+
+      if (parseResult !== null) {
+        return parseResult;
+      }
     }
 
     return toFloatFormat(string, element, '');
