@@ -79,6 +79,36 @@ var floatify = function floatify(str) {
     var dotCount;
     var commaCount;
 
+    function parseMixedSeparators() {
+      // format is using dot and comma
+
+      // last dot position
+      lDotPos = string.lastIndexOf('.');
+      // last comma position
+      lCommaPos = string.lastIndexOf(',');
+
+      // order of 1st dot -> comma must be same as last dot -> comma
+      // 123.123.123,123 -> ok 123.123,123.123 -> not ok
+      if (Math.sign(dotPos - commaPos) !== Math.sign(lDotPos - lCommaPos)) {
+        return Number.NaN;
+      }
+
+      // check positions to guess the thousands separator
+      if (dotPos > commaPos) {
+        if (dotCount > 1) {
+          return Number.NaN;
+        }
+        // best guess: . is thousands separator and , is decimal point
+        return toFloatFormat(string, ',', '.');
+      }
+
+      if (commaCount > 1) {
+        return Number.NaN;
+      }
+      // best guess: , is thousands separator and . is decimal point
+      return toFloatFormat(string, '.', ',');
+    }
+
     string = string.trim();
 
     // 1st dot position
@@ -121,33 +151,7 @@ var floatify = function floatify(str) {
     }
 
     if (dotPos !== -1 && commaPos !== -1) {
-      // format is using dot and comma
-
-      // last dot position
-      lDotPos = string.lastIndexOf('.');
-      // last comma position
-      lCommaPos = string.lastIndexOf(',');
-
-      // order of 1st dot -> comma must be same as last dot -> comma
-      // 123.123.123,123 -> ok 123.123,123.123 -> not ok
-      if (Math.sign(dotPos - commaPos) !== Math.sign(lDotPos - lCommaPos)) {
-        return Number.NaN;
-      }
-
-      // check positions to guess the thousands separator
-      if (dotPos > commaPos) {
-        if (dotCount > 1) {
-          return Number.NaN;
-        }
-        // best guess: . is thousands separator and , is decimal point
-        return toFloatFormat(string, ',', '.');
-      }
-
-      if (commaCount > 1) {
-        return Number.NaN;
-      }
-      // best guess: , is thousands separator and . is decimal point
-      return toFloatFormat(string, '.', ',');
+      return parseMixedSeparators();
     }
 
     if (dotPos !== -1) {
