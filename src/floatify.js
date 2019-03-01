@@ -3,14 +3,12 @@
 var floatify = function floatify(str) {
   var toFloatFormat = function toFloatFormat(str, ts, ds) {
     var string = str;
-    var thousandsSeparator = ts || '';
     var decimalSeparator = ds || '';
 
-    thousandsSeparator = thousandsSeparator === '.' ? '\\.' : thousandsSeparator;
-    decimalSeparator = decimalSeparator === '.' ? '\\.' : decimalSeparator;
-
-    string = thousandsSeparator !== '' ? string.replace(new RegExp(thousandsSeparator, 'g'), '') : string;
-    string = decimalSeparator !== '' ? string.replace(new RegExp(decimalSeparator, 'g'), '.') : string;
+    string = string.split(ts || '').join('');
+    if (decimalSeparator !== '') {
+      string = string.split(decimalSeparator).join('.');
+    }
 
     return parseFloat(string);
   };
@@ -19,35 +17,54 @@ var floatify = function floatify(str) {
     var string = str;
     var element = ele;
     var parts = string.split(element);
-    for (var i = 1; i < parts.length; i++) {
-      var left = parseInt(parts[i - 1], 10);
 
-      if (parts[i].length === 0) {
-        return Number.NaN;
-      } else if (parts[i].length === 3) {
-        if (parts[i - 1].length > 3 && parts.length - 1 !== i) {
-          return Number.NaN;
-        }
-
-        if (
-          (left === 0 || isNaN(left) || parts[i - 1].length > 3)
-          && parts.length - 1 === i
-        ) {
-          return toFloatFormat(string, '', element);
-        }
-      } else if (i < parts.length - 1) {
-        // violation in midPart -> NaN
-        return Number.NaN;
-      } else {
-        // violation in end -> Could be decimalSeparator
-        if (count === 1) {
-          return toFloatFormat(string, '', element);
-        }
+    function parseMidPart() {
+      if (current.length !== 3) {
         return Number.NaN;
       }
+
+      if (left.length > 3) {
+        return Number.NaN;
+      }
+
+      // no decision, continue
+      return null;
     }
 
-    return toFloatFormat(string, element, '');
+    function parseEndPart() {
+      if ((leftVal === 0 || isNaN(leftVal) || left.length > 3)) {
+        return toFloatFormat(string, '', element);
+      }
+
+      if (current.length === 3) {
+        return toFloatFormat(string, element, '');
+      }
+
+      if (count === 1) {
+        return toFloatFormat(string, '', element);
+      }
+
+      return Number.NaN;
+    }
+
+    for (var i = 1; i < parts.length; i++) {
+      var current = parts[i];
+      var left = parts[i - 1];
+      var leftVal = parseInt(left, 10);
+      var isLast = parts.length - 1 === i;
+      var parseResult;
+
+      if (!isLast) {
+        parseResult = parseMidPart();
+      } else {
+        parseResult = parseEndPart();
+      }
+
+      if (parseResult !== null) {
+        break;
+      }
+    }
+    return parseResult || Number.NaN;
   };
 
   var parse = function parse(str) {
@@ -61,6 +78,65 @@ var floatify = function floatify(str) {
     var lCommaPos;
     var dotCount;
     var commaCount;
+
+    function parseMixedSeparators() {
+      // format is using dot and comma
+
+      // last dot position
+      lDotPos = string.lastIndexOf('.');
+      // last comma position
+      lCommaPos = string.lastIndexOf(',');
+
+      // order of 1st dot -> comma must be same as last dot -> comma
+      // 123.123.123,123 -> ok 123.123,123.123 -> not ok
+      if (Math.sign(dotPos - commaPos) !== Math.sign(lDotPos - lCommaPos)) {
+        return Number.NaN;
+      }
+
+      // check positions to guess the thousands separator
+      if (dotPos > commaPos) {
+        if (dotCount > 1) {
+          return Number.NaN;
+        }
+        // best guess: . is thousands separator and , is decimal point
+        return toFloatFormat(string, ',', '.');
+      }
+
+      if (commaCount > 1) {
+        return Number.NaN;
+      }
+      // best guess: , is thousands separator and . is decimal point
+      return toFloatFormat(string, '.', ',');
+    }
+
+    function parseSingleSeparators() {
+      if (dotPos !== -1) {
+        // only dot(s) in format
+        return parseParts(string, '.', dotCount);
+      }
+
+      if (commaPos !== -1) {
+        // only comma(s) in format
+        return parseParts(string, ',', commaCount);
+      }
+
+      return toFloatFormat(string);
+    }
+
+    function precheckFormat() {
+      // only combination of 2 separators allowed
+      if (dotCount > 0 && commaCount > 0 && spaceCount > 0) {
+        return false;
+      }
+
+      // if there is any separator (space, comma, dot) found more than once,
+      // all other must not be found more than once
+      if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) {
+        return false;
+      }
+
+      return !(commaCount > 1 && spaceCount > 1);
+    }
 
     string = string.trim();
 
@@ -76,68 +152,27 @@ var floatify = function floatify(str) {
       return toFloatFormat(string);
     }
 
-    // space count
     spaceSplit = string.split(' ');
     spaceCount = spaceSplit.length - 1;
-
-    if (spaceCount > 0) {
-      var first = spaceSplit.shift();
-      var last = spaceSplit.pop();
-
-      if (!string.match(/^(\d{1,3})?(\s\d{3})*([,\.]\d+)?$/)) {
-        return Number.NaN;
-      }
-
-      spaceSplit.unshift(first);
-      spaceSplit.push(last);
-
-      string = spaceSplit.join('');
-    }
-
-    // dot count
     dotCount = string.split('.').length - 1;
-    // comma count
     commaCount = string.split(',').length - 1;
 
-    if (dotPos !== -1 && commaPos !== -1) {
-      // format is using dot and comma
-
-      // last dot position
-      lDotPos = string.lastIndexOf('.');
-      // last comma position
-      lCommaPos = string.lastIndexOf(',');
-
-      // order of 1st dot -> comma must be same as last dot -> comma
-      // 123.123.123,123 -> ok 123.123,123.123 -> not ok
-      if (Math.sign(dotPos - commaPos) !== Math.sign(lDotPos - lCommaPos)) {
-        return Number.NaN;
-      }
-
-      // check positions to guess the thousands separator
-      if (dotPos > commaPos && dotCount === 1) {
-        // best guess: . is thousands separator and , is decimal point
-        return toFloatFormat(string, ',', '.');
-      }
-
-      if (commaPos > dotPos && commaCount === 1) {
-        // best guess: , is thousands separator and . is decimal point
-        return toFloatFormat(string, '.', ',');
-      }
-
+    if (!precheckFormat()) {
       return Number.NaN;
     }
 
-    if (dotPos !== -1) {
-      // only dot(s) in format
-      return parseParts(string, '.', dotCount);
+    if (spaceCount > 0) {
+      if (!string.match(/^(\d{1,3})?(\s\d{3})*([,\.]\d+)?$/)) {
+        return Number.NaN;
+      }
+      string = spaceSplit.join('');
     }
 
-    if (commaPos !== -1) {
-      // only comma(s) in format
-      return parseParts(string, ',', commaCount);
+    if (dotPos !== -1 && commaPos !== -1) {
+      return parseMixedSeparators();
     }
 
-    return toFloatFormat(string);
+    return parseSingleSeparators();
   };
 
   return parse(str);
