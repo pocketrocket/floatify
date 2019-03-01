@@ -19,20 +19,22 @@ var floatify = function floatify(str) {
     var parts = string.split(element);
 
     for (var i = 1; i < parts.length; i++) {
+      var current = parts[i];
       var left = parts[i - 1];
       var leftVal = parseInt(left, 10);
+      var isLast = parts.length - 1 === i;
 
-      if (parts[i].length === 0) {
+      if (current.length === 0 && !isLast) {
         return Number.NaN;
       }
 
-      if (parts[i].length === 3) {
-        if (left.length > 3 && parts.length - 1 !== i) {
+      if (current.length === 3) {
+        if (left.length > 3 && !isLast) {
           return Number.NaN;
         }
 
         if (
-          (leftVal === 0 || isNaN(leftVal) || left.length > 3) && parts.length - 1 === i
+          (leftVal === 0 || isNaN(leftVal) || left.length > 3) && isLast
         ) {
           return toFloatFormat(string, '', element);
         }
@@ -40,7 +42,7 @@ var floatify = function floatify(str) {
         continue;
       }
 
-      if (i < parts.length - 1) {
+      if (!isLast) {
         // violation in midPart -> NaN
         return Number.NaN;
       }
