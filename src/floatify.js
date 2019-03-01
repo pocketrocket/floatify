@@ -89,13 +89,21 @@ var floatify = function floatify(str) {
     commaCount = string.split(',').length - 1;
 
     // only combination of 2 separators allowed
-    if (dotCount > 0 && commaCount > 0 && spaceCount > 0) return Number.NaN;
+    if (dotCount > 0 && commaCount > 0 && spaceCount > 0) {
+      return Number.NaN;
+    }
 
     // if there is any separator (space, comma, dot) found more than once,
     // all other must not be found more than once
-    if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) return Number.NaN;
-    if (commaCount > 1 && (dotCount > 1 || spaceCount > 1)) return Number.NaN;
-    if (spaceCount > 1 && (dotCount > 1 || commaCount > 1)) return Number.NaN;
+    if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) {
+      return Number.NaN;
+    }
+    if (commaCount > 1 && (dotCount > 1 || spaceCount > 1)) {
+      return Number.NaN;
+    }
+    if (spaceCount > 1 && (dotCount > 1 || commaCount > 1)) {
+      return Number.NaN;
+    }
 
     if (spaceCount > 0) {
       if (!string.match(/^(\d{1,3})?(\s\d{3})*([,\.]\d+)?$/)) {
@@ -120,12 +128,16 @@ var floatify = function floatify(str) {
 
       // check positions to guess the thousands separator
       if (dotPos > commaPos) {
-        if (dotCount > 1) return Number.NaN;
+        if (dotCount > 1) {
+          return Number.NaN;
+        }
         // best guess: . is thousands separator and , is decimal point
         return toFloatFormat(string, ',', '.');
       }
 
-      if (commaCount > 1) return Number.NaN;
+      if (commaCount > 1) {
+        return Number.NaN;
+      }
       // best guess: , is thousands separator and . is decimal point
       return toFloatFormat(string, '.', ',');
     }
