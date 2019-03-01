@@ -3,14 +3,12 @@
 var floatify = function floatify(str) {
   var toFloatFormat = function toFloatFormat(str, ts, ds) {
     var string = str;
-    var thousandsSeparator = ts || '';
     var decimalSeparator = ds || '';
 
-    thousandsSeparator = thousandsSeparator === '.' ? '\\.' : thousandsSeparator;
-    decimalSeparator = decimalSeparator === '.' ? '\\.' : decimalSeparator;
-
-    string = thousandsSeparator !== '' ? string.replace(new RegExp(thousandsSeparator, 'g'), '') : string;
-    string = decimalSeparator !== '' ? string.replace(new RegExp(decimalSeparator, 'g'), '.') : string;
+    string = string.split(ts || '').join('');
+    if (decimalSeparator !== '') {
+      string = string.split(decimalSeparator).join('.');
+    }
 
     return parseFloat(string);
   };
@@ -19,32 +17,41 @@ var floatify = function floatify(str) {
     var string = str;
     var element = ele;
     var parts = string.split(element);
+
     for (var i = 1; i < parts.length; i++) {
-      var left = parseInt(parts[i - 1], 10);
+      var left = parts[i - 1];
+      var leftVal = parseInt(left, 10);
 
       if (parts[i].length === 0) {
         return Number.NaN;
-      } else if (parts[i].length === 3) {
-        if (parts[i - 1].length > 3 && parts.length - 1 !== i) {
+      }
+
+      if (parts[i].length === 3) {
+        if (left.length > 3 && parts.length - 1 !== i) {
           return Number.NaN;
         }
 
         if (
-          (left === 0 || isNaN(left) || parts[i - 1].length > 3)
+          (leftVal === 0 || isNaN(leftVal) || left.length > 3)
           && parts.length - 1 === i
         ) {
           return toFloatFormat(string, '', element);
         }
-      } else if (i < parts.length - 1) {
+
+        continue;
+      }
+
+      if (i < parts.length - 1) {
         // violation in midPart -> NaN
         return Number.NaN;
-      } else {
-        // violation in end -> Could be decimalSeparator
-        if (count === 1) {
-          return toFloatFormat(string, '', element);
-        }
-        return Number.NaN;
       }
+
+      // violation in end -> Could be decimalSeparator
+      if (count === 1) {
+        return toFloatFormat(string, '', element);
+      }
+
+      return Number.NaN;
     }
 
     return toFloatFormat(string, element, '');
@@ -76,28 +83,26 @@ var floatify = function floatify(str) {
       return toFloatFormat(string);
     }
 
-    // space count
     spaceSplit = string.split(' ');
     spaceCount = spaceSplit.length - 1;
+    dotCount = string.split('.').length - 1;
+    commaCount = string.split(',').length - 1;
+
+    // only combination of 2 separators allowed
+    if (dotCount > 0 && commaCount > 0 && spaceCount > 0) return Number.NaN;
+
+    // if there is any separator (space, comma, dot) found more than once,
+    // all other must not be found more than once
+    if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) return Number.NaN;
+    if (commaCount > 1 && (dotCount > 1 || spaceCount > 1)) return Number.NaN;
+    if (spaceCount > 1 && (dotCount > 1 || commaCount > 1)) return Number.NaN;
 
     if (spaceCount > 0) {
-      var first = spaceSplit.shift();
-      var last = spaceSplit.pop();
-
       if (!string.match(/^(\d{1,3})?(\s\d{3})*([,\.]\d+)?$/)) {
         return Number.NaN;
       }
-
-      spaceSplit.unshift(first);
-      spaceSplit.push(last);
-
       string = spaceSplit.join('');
     }
-
-    // dot count
-    dotCount = string.split('.').length - 1;
-    // comma count
-    commaCount = string.split(',').length - 1;
 
     if (dotPos !== -1 && commaPos !== -1) {
       // format is using dot and comma
@@ -114,17 +119,15 @@ var floatify = function floatify(str) {
       }
 
       // check positions to guess the thousands separator
-      if (dotPos > commaPos && dotCount === 1) {
+      if (dotPos > commaPos) {
+        if (dotCount > 1) return Number.NaN;
         // best guess: . is thousands separator and , is decimal point
         return toFloatFormat(string, ',', '.');
       }
 
-      if (commaPos > dotPos && commaCount === 1) {
-        // best guess: , is thousands separator and . is decimal point
-        return toFloatFormat(string, '.', ',');
-      }
-
-      return Number.NaN;
+      if (commaCount > 1) return Number.NaN;
+      // best guess: , is thousands separator and . is decimal point
+      return toFloatFormat(string, '.', ',');
     }
 
     if (dotPos !== -1) {
