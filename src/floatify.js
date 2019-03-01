@@ -64,7 +64,7 @@ var floatify = function floatify(str) {
         break;
       }
     }
-    return parseResult;
+    return parseResult || Number.NaN;
   };
 
   var parse = function parse(str) {
