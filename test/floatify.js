@@ -279,7 +279,7 @@ const tests = [
         input: '123,123',
         options: {preferDecimalSeparator: true},
         expectation: 123.123
-      },
+      }
     ]
   },
   {
@@ -290,7 +290,7 @@ const tests = [
       { input: '123.123,0', expectation: 123123 },
       { input: '1.234.567,0', expectation: 1234567 },
       { input: '1.234.567.890,0', expectation: 1234567890 },
-  
+
       { input: '1,123.0', expectation: 1123 },
       { input: '12,123.0', expectation: 12123 },
       { input: '123,123.0', expectation: 123123 },
@@ -309,7 +309,7 @@ const tests = [
       { input: '123.1234.123', expectation: Number.NaN },
       { input: '1234.123.123', expectation: Number.NaN },
       { input: '1.2.3', expectation: Number.NaN },
-  
+
       { input: ',', expectation: Number.NaN },
       { input: ',,', expectation: Number.NaN },
       { input: ',,,', expectation: Number.NaN },
@@ -318,7 +318,7 @@ const tests = [
       { input: '123,1234,123', expectation: Number.NaN },
       { input: '1234,123,123', expectation: Number.NaN },
       { input: '1,2,3', expectation: Number.NaN },
-  
+
       { input: ' ', expectation: Number.NaN },
       { input: '  ', expectation: Number.NaN },
       { input: '   ', expectation: Number.NaN },
@@ -331,15 +331,15 @@ const tests = [
       { input: '1 2 3', expectation: Number.NaN },
       { input: '123 123,123 123', expectation: Number.NaN },
       { input: '123 123.123 123', expectation: Number.NaN },
-  
+
       { input: '123.123,123.123,123', expectation: Number.NaN },
       { input: '123.123,123.123.123', expectation: Number.NaN },
       { input: '123,123.123,123.123', expectation: Number.NaN },
       { input: '123,123.123,123,123', expectation: Number.NaN },
-  
+
       { input: '..,-', expectation: Number.NaN },
       { input: 'seven', expectation: Number.NaN },
-  
+
       { input: '123 123,123.12', expectation: Number.NaN },
       { input: '123,123,123.123.2', expectation: Number.NaN },
       { input: '123 123 123.123.2', expectation: Number.NaN },
