@@ -1,6 +1,9 @@
 'use strict';
 
-var floatify = function floatify(str) {
+var floatify = function floatify(str, preferDecimalSeparator) {
+  // by default we prefer thousands separators
+  var preferThousandsSeparators = preferDecimalSeparator !== true;
+
   var toFloatFormat = function toFloatFormat(str, ts, ds) {
     var string = str;
     var decimalSeparator = ds || '';
@@ -13,7 +16,7 @@ var floatify = function floatify(str) {
     return parseFloat(string);
   };
 
-  var parseParts = function parseParts(str, ele, count) {
+  var parseParts = function parseParts(str, ele, count, preferThousandsSeparators) {
     var string = str;
     var element = ele;
     var parts = string.split(element);
@@ -37,7 +40,10 @@ var floatify = function floatify(str) {
       }
 
       if (current.length === 3) {
-        return toFloatFormat(string, element, '');
+        if (preferThousandsSeparators) {
+          return toFloatFormat(string, element, '');
+        }
+        return toFloatFormat(string, '', element);
       }
 
       if (count === 1) {
@@ -67,7 +73,7 @@ var floatify = function floatify(str) {
     return parseResult || Number.NaN;
   };
 
-  var parse = function parse(str) {
+  var parse = function parse(str, preferThousandsSeparators) {
     var string = str;
     var spacePos;
     var spaceSplit;
@@ -112,12 +118,12 @@ var floatify = function floatify(str) {
     function parseSingleSeparators() {
       if (dotPos !== -1) {
         // only dot(s) in format
-        return parseParts(string, '.', dotCount);
+        return parseParts(string, '.', dotCount, preferThousandsSeparators);
       }
 
       if (commaPos !== -1) {
         // only comma(s) in format
-        return parseParts(string, ',', commaCount);
+        return parseParts(string, ',', commaCount, preferThousandsSeparators);
       }
 
       return toFloatFormat(string);
@@ -175,7 +181,7 @@ var floatify = function floatify(str) {
     return parseSingleSeparators();
   };
 
-  return parse(str);
+  return parse(str, preferThousandsSeparators);
 };
 
 if (typeof exports !== 'undefined') {
