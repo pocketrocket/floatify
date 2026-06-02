@@ -1,52 +1,73 @@
-floatify . Common helper to floatify strings
-===
-[![Build Status](https://travis-ci.org/pocketrocket/floatify.svg?branch=master)](https://travis-ci.org/pocketrocket/floatify)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/pocketrocket/floatify/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pocketrocket/floatify/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/pocketrocket/floatify/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/pocketrocket/floatify/?branch=master)
+# floatify
 
-# New optional toggle
-Since **v1.4.0** you have a 2nd optional parameter to prefer decimal separator instead of thousands separators (old standard, new default behaviour. See [Issue #8](https://github.com/pocketrocket/floatify/issues/8) and test/floatify.js for details)
+> Common helper to floatify strings — locale-aware string → float parsing.
 
+`floatify` turns a numeric string into a `Number`, automatically guessing the
+thousands and decimal separators (`.`, `,` or space) regardless of locale.
+It returns `NaN` for ambiguous or invalid input.
 
-## BC Break
+## Installation
 
-Since v1.3.0 floatify exports as function!
-
-```js
-var floatify = require("floatify")
-// old: floatify.floatify("123123.245346556")
-// new:
-floatify("123123.245346556")
+```sh
+npm i floatify
 ```
 
 ## Usage
-### Example
+
+`floatify` is an **ES module** that exports a single function as the default export:
 
 ```js
-var floatify = require("floatify")
-floatify("123123.245346556")
->> 123123.245346556
-floatify("123.242,5346556")
->> 123242.5346556
-floatify("123,242.5346556")
->> 123242.5346556
-floatify("123 242 123.7568")
->> 123242123.7568
+import floatify from "floatify";
+
+floatify("123123.245346556");
+//=> 123123.245346556
+
+floatify("123.242,5346556");
+//=> 123242.5346556
+
+floatify("123,242.5346556");
+//=> 123242.5346556
+
+floatify("123 242 123.7568");
+//=> 123242123.7568
 ```
 
-for more detailed examples see Mocha Testcases in `test/floatify.js`
+### Prefer decimal over thousands separator
 
-## Installation with npm
-### with npm
-`npm i floatify`
-### with yarn
-`yarn add floatify`
+By default an ambiguous single separator is treated as a **thousands**
+separator. Pass `true` as the second argument to prefer a **decimal** point:
 
-## Clone repo
-### via ssh
-`git clone git@github.com:pocketrocket/floatify`
-### via https
-`git clone https://github.com/pocketrocket/floatify.git`
+```js
+floatify("123.123");        //=> 123123   (thousands, default)
+floatify("123.123", true);  //=> 123.123  (decimal)
+```
 
-## Testing
-Basic testing done, use `npm test` or `yarn test`
+See `test/floatify.js` for the full set of supported formats.
+
+## Requirements
+
+- **Node.js ≥ 18** (pure ESM, no transpiler required).
+
+## Breaking changes
+
+### v2.0.0
+- **ESM-only.** `floatify` is now a native ES module (`export default`).
+  Import it with `import floatify from "floatify"` — `require()` is no longer
+  supported (use Node ≥ 22.12 `require(esm)` if you must consume it from CJS).
+- Modernised to ES6+ and migrated to the built-in Node test runner; no runtime
+  dependencies.
+
+### v1.3.0
+- `floatify` exports the function directly: call `floatify(str)` instead of
+  `floatify.floatify(str)`.
+
+## Development
+
+```sh
+npm test     # node --test
+npm run lint # eslint
+```
+
+## License
+
+[MIT](LICENSE)
