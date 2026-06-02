@@ -1,70 +1,62 @@
-'use strict';
+// floatify — locale-aware string → float parser.
+// Handles dot/comma/space thousands and decimal separators and guesses the
+// intended format. Behaviour is covered by the test suite in test/floatify.js.
 
-var floatify = function floatify(str, preferDecimalSeparator) {
+const floatify = (str, preferDecimalSeparator) => {
   // by default we prefer thousands separators
-  var preferThousandsSeparators = preferDecimalSeparator !== true;
+  const preferThousandsSeparators = preferDecimalSeparator !== true;
 
-  var toFloatFormat = function toFloatFormat(str, ts, ds) {
-    var string = str;
-    var decimalSeparator = ds || '';
-
-    string = string.split(ts || '').join('');
+  const toFloatFormat = (input, ts, ds) => {
+    const decimalSeparator = ds || '';
+    let string = input.split(ts || '').join('');
     if (decimalSeparator !== '') {
       string = string.split(decimalSeparator).join('.');
     }
-
     return parseFloat(string);
   };
 
-  var parseParts = function parseParts(str, ele, count, preferThousandsSeparators) {
-    var string = str;
-    var element = ele;
-    var parts = string.split(element);
+  const parseParts = (string, element, count, preferThousands) => {
+    const parts = string.split(element);
+    // Shared across the loop and the nested parsers (was var-hoisted before).
+    let current;
+    let left;
+    let leftVal;
+    let parseResult;
 
-    function parseMidPart() {
+    const parseMidPart = () => {
       if (current.length !== 3) {
         return Number.NaN;
       }
-
       if (left.length > 3) {
         return Number.NaN;
       }
-
       // no decision, continue
       return null;
-    }
+    };
 
-    function parseEndPart() {
-      if ((leftVal === 0 || isNaN(leftVal) || left.length > 3)) {
+    const parseEndPart = () => {
+      if (leftVal === 0 || Number.isNaN(leftVal) || left.length > 3) {
         return toFloatFormat(string, '', element);
       }
-
       if (current.length === 3) {
-        if (preferThousandsSeparators) {
+        if (preferThousands) {
           return toFloatFormat(string, element, '');
         }
         return toFloatFormat(string, '', element);
       }
-
       if (count === 1) {
         return toFloatFormat(string, '', element);
       }
-
       return Number.NaN;
-    }
+    };
 
-    for (var i = 1; i < parts.length; i++) {
-      var current = parts[i];
-      var left = parts[i - 1];
-      var leftVal = parseInt(left, 10);
-      var isLast = parts.length - 1 === i;
-      var parseResult;
+    for (let i = 1; i < parts.length; i += 1) {
+      current = parts[i];
+      left = parts[i - 1];
+      leftVal = parseInt(left, 10);
+      const isLast = parts.length - 1 === i;
 
-      if (!isLast) {
-        parseResult = parseMidPart();
-      } else {
-        parseResult = parseEndPart();
-      }
+      parseResult = isLast ? parseEndPart() : parseMidPart();
 
       if (parseResult !== null) {
         break;
@@ -73,28 +65,30 @@ var floatify = function floatify(str, preferDecimalSeparator) {
     return parseResult || Number.NaN;
   };
 
-  var parse = function parse(str, preferThousandsSeparators) {
-    var string = str;
-    var spacePos;
-    var spaceSplit;
-    var spaceCount;
-    var dotPos;
-    var commaPos;
-    var lDotPos;
-    var lCommaPos;
-    var dotCount;
-    var commaCount;
+  const parse = (input, preferThousands) => {
+    let string = input.trim();
 
-    function parseMixedSeparators() {
-      // format is using dot and comma
+    const dotPos = string.indexOf('.');
+    const commaPos = string.indexOf(',');
+    const spacePos = string.indexOf(' ');
 
-      // last dot position
-      lDotPos = string.lastIndexOf('.');
-      // last comma position
-      lCommaPos = string.lastIndexOf(',');
+    if (dotPos + commaPos + spacePos === -3) {
+      // life is good, no separators
+      return toFloatFormat(string);
+    }
 
-      // order of 1st dot -> comma must be same as last dot -> comma
-      // 123.123.123,123 -> ok 123.123,123.123 -> not ok
+    const spaceSplit = string.split(' ');
+    const spaceCount = spaceSplit.length - 1;
+    const dotCount = string.split('.').length - 1;
+    const commaCount = string.split(',').length - 1;
+
+    // format is using dot and comma
+    const parseMixedSeparators = () => {
+      // order of 1st dot -> comma must match last dot -> comma
+      // 123.123.123,123 -> ok | 123.123,123.123 -> not ok
+      const lDotPos = string.lastIndexOf('.');
+      const lCommaPos = string.lastIndexOf(',');
+
       if (Math.sign(dotPos - commaPos) !== Math.sign(lDotPos - lCommaPos)) {
         return Number.NaN;
       }
@@ -113,62 +107,38 @@ var floatify = function floatify(str, preferDecimalSeparator) {
       }
       // best guess: , is thousands separator and . is decimal point
       return toFloatFormat(string, '.', ',');
-    }
+    };
 
-    function parseSingleSeparators() {
+    const parseSingleSeparators = () => {
       if (dotPos !== -1) {
         // only dot(s) in format
-        return parseParts(string, '.', dotCount, preferThousandsSeparators);
+        return parseParts(string, '.', dotCount, preferThousands);
       }
-
       if (commaPos !== -1) {
         // only comma(s) in format
-        return parseParts(string, ',', commaCount, preferThousandsSeparators);
+        return parseParts(string, ',', commaCount, preferThousands);
       }
-
       return toFloatFormat(string);
-    }
+    };
 
-    function precheckFormat() {
-      // only combination of 2 separators allowed
+    const precheckFormat = () => {
+      // only a combination of 2 separators is allowed
       if (dotCount > 0 && commaCount > 0 && spaceCount > 0) {
         return false;
       }
-
-      // if there is any separator (space, comma, dot) found more than once,
-      // all other must not be found more than once
+      // if any separator occurs more than once, the others must not
       if (dotCount > 1 && (commaCount > 1 || spaceCount > 1)) {
         return false;
       }
-
       return !(commaCount > 1 && spaceCount > 1);
-    }
-
-    string = string.trim();
-
-    // 1st dot position
-    dotPos = string.indexOf('.');
-    // 1st comma position
-    commaPos = string.indexOf(',');
-    // 1st space position
-    spacePos = string.indexOf(' ');
-
-    if (dotPos + commaPos + spacePos === -3) {
-      // life is good, no separators
-      return toFloatFormat(string);
-    }
-
-    spaceSplit = string.split(' ');
-    spaceCount = spaceSplit.length - 1;
-    dotCount = string.split('.').length - 1;
-    commaCount = string.split(',').length - 1;
+    };
 
     if (!precheckFormat()) {
       return Number.NaN;
     }
 
     if (spaceCount > 0) {
-      if (!string.match(/^(\d{1,3})?(\s\d{3})*([,\.]\d+)?$/)) {
+      if (!string.match(/^(\d{1,3})?(\s\d{3})*([,.]\d+)?$/)) {
         return Number.NaN;
       }
       string = spaceSplit.join('');
@@ -184,8 +154,4 @@ var floatify = function floatify(str, preferDecimalSeparator) {
   return parse(str, preferThousandsSeparators);
 };
 
-if (typeof exports !== 'undefined') {
-  if (typeof module !== 'undefined' && module.exports) {
-    exports = module.exports = floatify;
-  }
-}
+export default floatify;
