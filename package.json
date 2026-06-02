@@ -1,7 +1,9 @@
 {
   "name": "floatify",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Common helper to floatify strings",
+  "type": "module",
+  "exports": "./src/floatify.js",
   "main": "src/floatify.js",
   "directories": {
     "test": "test"
@@ -14,14 +16,12 @@
   },
   "homepage": "https://github.com/pocketrocket/floatify#readme",
   "engines": {
-    "node": ">= 6.0.0"
+    "node": ">= 18.0.0"
   },
   "scripts": {
-    "lint": "eslint src",
-    "test": "nyc --reporter=html --reporter=text --reporter=clover mocha test",
-    "prepublishOnly": "# also runs npm run prebuild",
-    "prebuild": "npm run test # also runs npm run pretest",
-    "pretest": "npm run lint"
+    "lint": "eslint src test",
+    "test": "node --test",
+    "coverage": "node --test --experimental-test-coverage"
   },
   "keywords": [
     "floatify",
@@ -33,12 +33,7 @@
     "numbers"
   ],
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
-    "eslint": "^10.2.1",
-    "eslint-config-airbnb-es5": "^1.2.0",
-    "eslint-plugin-react": "^7.12.4",
-    "mocha": "^11.7.2",
-    "nyc": "^18.0.0"
+    "eslint": "^9.39.0"
   },
   "author": "pocketrocket <pocketrocket@codecaboose.com>",
   "contributors": [

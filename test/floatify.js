@@ -1,7 +1,6 @@
-'use strict';
-
-var floatify = require('../src/floatify.js');
-var assert = require('assert');
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
+import floatify from '../src/floatify.js';
 
 const tests = [
   {
