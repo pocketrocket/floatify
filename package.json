@@ -5,6 +5,9 @@
   "type": "module",
   "exports": "./src/floatify.js",
   "main": "src/floatify.js",
+  "files": [
+    "src"
+  ],
   "directories": {
     "test": "test"
   },
