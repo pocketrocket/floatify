@@ -64,9 +64,13 @@ See `test/floatify.js` for the full set of supported formats.
 ## Development
 
 ```sh
-npm test     # node --test
-npm run lint # eslint
+pnpm install              # or: npm install
+pnpm test                 # node --test
+pnpm run lint             # eslint
+pnpm audit --audit-level=moderate
 ```
+
+A committed `pnpm-lock.yaml` enables reproducible installs (`pnpm install --frozen-lockfile`) and dependency audits in CI.
 
 ## License
 
